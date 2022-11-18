@@ -52,5 +52,6 @@ tdf_if_clf = LogisticRegression().fit(train_X, train_y)
 val_docs = get_uniq_id_docs(data_df, val_ids)
 val_X = get_tdf_if_vectors(tdf_if_vectoriser, val_docs)
 val_pred_y = tdf_if_clf.predict(val_X)
-print(val_pred_y)
-print(val_y)
+val_pred_proba_y = tdf_if_clf.predict_proba(val_X)
+for y, pred_y, pred_proba_y in zip(val_y, val_pred_y, val_pred_proba_y):
+    print(f"{y}\t{pred_y}\t{pred_proba_y}")
