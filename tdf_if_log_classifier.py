@@ -48,10 +48,40 @@ data_df = pd.read_csv("combined_data_v3.csv", usecols=["uniq_id", "outcome", "te
 (train_ids, train_y), (val_ids, val_y), (test_ids, test_y) = get_data_split(data_df, 40, 20)
 tdf_if_vectoriser, train_X = get_vectoriser_and_trian_vectors(data_df, train_ids)
 tdf_if_clf = LogisticRegression().fit(train_X, train_y)
-
+    
 val_docs = get_uniq_id_docs(data_df, val_ids)
 val_X = get_tdf_if_vectors(tdf_if_vectoriser, val_docs)
 val_pred_y = tdf_if_clf.predict(val_X)
 val_pred_proba_y = tdf_if_clf.predict_proba(val_X)
-for y, pred_y, pred_proba_y in zip(val_y, val_pred_y, val_pred_proba_y):
+
+un, up, tp, fp, tn, fn = 0, 0, 0, 0, 0, 0
+for val_id, y, pred_y, pred_proba_y in zip(val_ids, val_y, val_pred_y, val_pred_proba_y):
     print(f"{y}\t{pred_y}\t{pred_proba_y}")
+    if max(pred_proba_y) < 0.7:
+        if y:
+            up += 1
+        else:
+            un += 1
+    elif y:
+        if pred_y:
+            tp += 1
+        else:
+            fn += 1
+    else:
+        if pred_y:
+            fp += 1
+        else:
+            tn += 1
+print(f"up: {up}")
+print(f"tp: {tp}")
+print(f"fp: {fp}")
+print(f"tn: {tn}")
+print(f"fn: {fn}")
+
+print(f"positive undetermined rate = {up/ (tp + fn + up)}")
+print(f"negative undetermined rate = {un/ (tn + fp + un)}")
+print(f"undetermined rate = {(un + up)/ (un + up + tp + fp + tn + fn)}")
+print(f"positive predictive value = {tp/ (tp + fp)}")
+print(f"negative predictive value = {tn/ (tn + fn)}")
+print(f"sensitivity = {tp/ (tp + fn)}")
+print(f"specificity = {tn/ (fp + tn)}")
