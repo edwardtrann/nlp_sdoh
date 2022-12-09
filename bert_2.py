@@ -93,3 +93,9 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=METRICS)
 
 print(model.fit(train_x, train_y, epochs=10))
 
+print(model.evaluate(val_x, val_y))
+
+y_pred = model.predict(val_x)
+
+print(y_pred.flatten())
+
